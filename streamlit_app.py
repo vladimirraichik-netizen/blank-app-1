@@ -7,7 +7,6 @@ st.set_page_config(layout="wide", page_title="חקר פונקציות", page_ico
 st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגריתמית")
 
 st.sidebar.header("Parameters")
-# Расширяем выбор режимов для первой колонки
 func_type = st.sidebar.selectbox(
     "Power Function Type", 
     ["Integer Power (x^n)", "Root Function (n-th root)", "Rational Power (x^(p/q))"]
@@ -24,7 +23,6 @@ else:
 a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
 a_lt1 = st.sidebar.number_input("Base 0 < a < 1 (Decay)", min_value=0.1, max_value=0.95, value=0.5, step=0.05)
 
-# Три колонки для наглядного сравнения
 col1, col2, col3 = st.columns(3, gap="medium")
 
 with col1:
@@ -68,19 +66,17 @@ with col1:
         ax1.set_ylim(-9, 9)
         
     else:
-        # Рациональная степень x^(p/q)
         power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
         
         with np.errstate(divide='ignore', invalid='ignore'):
-            # Корректная обработка для дробных степеней (учитываем четность/нечетность знаменателя q)
+            # Корректный расчет для рациональной степени p/q
             if q % 2 == 1:
-                # При нечетном знаменателе корень извлекается и из отрицательных чисел
+                # Если знаменатель нечетный, корень извлекается и из отрицательных
                 y1 = np.sign(x1) * (np.abs(x1) ** (p / q))
             else:
-                # При четном знаменателе область определения x >= 0
+                # Если знаменатель четный, область определения x >= 0
                 y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
                 
-            # Обработка отрицательных степеней (деление на ноль в точке 0)
             if p < 0:
                 y1[np.abs(x1) < 0.02] = np.nan
             y1[y1 > 45] = np.nan
