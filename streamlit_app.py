@@ -29,7 +29,8 @@ else:
     selected_rat = st.sidebar.selectbox("Select rational power", list(rational_options.keys()))
     p, q = rational_options[selected_rat]
 
-show_inverse = st.sidebar.checkbox("Show Inverse Function & Symmetry", value=False)
+show_inverse = st.sidebar.checkbox("Show Inverse Function & Symmetry (Power)", value=False)
+show_exp_inverse = st.sidebar.checkbox("Show Inverse & Symmetry (Exp/Log)", value=True)
 
 a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
 a_lt1 = st.sidebar.number_input("Base 0 < a < 1 (Decay)", min_value=0.1, max_value=0.95, value=0.5, step=0.05)
@@ -197,14 +198,17 @@ with col2:
     ax2.axhline(0, color='black', lw=1.2, zorder=1)
     ax2.axvline(0, color='black', lw=1.2, zorder=1)
     ax2.plot(x_exp, y2_exp, lw=2.2, color='#d62728', label=f'$y = {a_gt1:.2f}^{{x}}$', zorder=3)
-    # Исправленный формат логарифма: основание внизу, аргумент без скобок
-    ax2.plot(x_log, y2_log, lw=2.2, color='#2ca02c', label=f'$y = \\log_{{{a_gt1:.2g}}} x$', zorder=3)
-    ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+    
+    if show_exp_inverse:
+        ax2.plot(x_log, y2_log, lw=2.2, color='#2ca02c', label=f'$y = \\log_{{{a_gt1:.2g}}} x$', zorder=3)
+        ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+        ax2.legend(fontsize=10, loc='upper left')
+    else:
+        ax2.legend(fontsize=10, loc='upper left')
     
     ax2.grid(True, linestyle=':', alpha=0.7, zorder=0)
     ax2.set_xlim(-5.5, 7.5)
     ax2.set_ylim(-9, 10)
-    ax2.legend(fontsize=10, loc='upper left')
     ax2.tick_params(labelsize=10)
     st.pyplot(fig2)
 
@@ -221,13 +225,16 @@ with col3:
     ax3.axhline(0, color='black', lw=1.2, zorder=1)
     ax3.axvline(0, color='black', lw=1.2, zorder=1)
     ax3.plot(x_exp, y3_exp, lw=2.2, color='#d62728', label=f'$y = {a_lt1:.2f}^{{x}}$', zorder=3)
-    # Исправленный формат логарифма: основание внизу, аргумент без скобок
-    ax3.plot(x_log, y3_log, lw=2.2, color='#2ca02c', label=f'$y = \\log_{{{a_lt1:.2g}}} x$', zorder=3)
-    ax3.plot(x_log, x_log, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+    
+    if show_exp_inverse:
+        ax3.plot(x_log, y3_log, lw=2.2, color='#2ca02c', label=f'$y = \\log_{{{a_lt1:.2g}}} x$', zorder=3)
+        ax3.plot(x_log, x_log, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+        ax3.legend(fontsize=10, loc='upper left')
+    else:
+        ax3.legend(fontsize=10, loc='upper left')
     
     ax3.grid(True, linestyle=':', alpha=0.7, zorder=0)
     ax3.set_xlim(-5.5, 7.5)
     ax3.set_ylim(-9, 10)
-    ax3.legend(fontsize=10, loc='upper left')
     ax3.tick_params(labelsize=10)
     st.pyplot(fig3)
