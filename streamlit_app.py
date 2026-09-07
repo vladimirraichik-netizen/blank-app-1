@@ -7,41 +7,65 @@ st.set_page_config(layout="wide", page_title="חקר פונקציות", page_ico
 st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגריתמית")
 
 st.sidebar.header("Parameters")
-n = st.sidebar.number_input("Power (n)", min_value=-5, max_value=5, value=2, step=1)
+# Выбор режима для степенной функции
+func_type = st.sidebar.selectbox("Power Function Type", ["Integer Power (x^n)", "Root Function (n-th root)"])
+
+if func_type == "Integer Power (x^n)":
+    n = st.sidebar.number_input("Power (n)", min_value=-5, max_value=5, value=2, step=1)
+else:
+    root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
+
 a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
 a_lt1 = st.sidebar.number_input("Base 0 < a < 1 (Decay)", min_value=0.1, max_value=0.95, value=0.5, step=0.05)
 
-# Три колонки для одновременного сравнения всех графиков
+# Три колонки для наглядного сравнения
 col1, col2, col3 = st.columns(3, gap="medium")
 
 with col1:
-    if n == 0:
-        power_str = "y = 1"
-    elif n == 1:
-        power_str = "y = x"
-    elif n > 0:
-        power_str = f"y = x^{{{n}}}"
-    else:
-        abs_n = abs(n)
-        power_str = f"y = \\frac{{1}}{{x^{{{abs_n}}}}}" if abs_n > 1 else "y = \\frac{1}{x}"
-        
-    st.subheader(f"פונקציית חזקה: ${power_str}$")
-    
     fig1, ax1 = plt.subplots(figsize=(5, 5))
     x1 = np.linspace(-5, 5, 1500)
-    with np.errstate(divide='ignore', invalid='ignore'):
-        y1 = x1**n
-        if n < 0:
-            y1[np.abs(x1) < 0.02] = np.nan
-        y1[y1 > 45] = np.nan
-        y1[y1 < -45] = np.nan
+    
+    if func_type == "Integer Power (x^n)":
+        if n == 0:
+            power_str = "y = 1"
+        elif n == 1:
+            power_str = "y = x"
+        elif n > 0:
+            power_str = f"y = x^{{{n}}}"
+        else:
+            abs_n = abs(n)
+            power_str = f"y = \\frac{{1}}{{x^{{{abs_n}}}}}" if abs_n > 1 else "y = \\frac{1}{x}"
+            
+        with np.errstate(divide='ignore', invalid='ignore'):
+            y1 = x1**n
+            if n < 0:
+                y1[np.abs(x1) < 0.02] = np.nan
+            y1[y1 > 45] = np.nan
+            y1[y1 < -45] = np.nan
+            
+        ax1.set_xlim(-5.5, 5.5)
+        ax1.set_ylim(-9, 9)
+    else:
+        # Корень n-й степени (поддерживает нечетные корни для отрицательных x через sign)
+        if root_n == 2:
+            power_str = "y = \\sqrt{x}"
+        else:
+            power_str = f"y = \\sqrt[{root_n}]{{x}}"
+            
+        with np.errstate(divide='ignore', invalid='ignore'):
+            if root_n % 2 == 1:
+                y1 = np.sign(x1) * (np.abs(x1) ** (1 / root_n))
+            else:
+                y1 = np.where(x1 >= 0, x1 ** (1 / root_n), np.nan)
+                
+        ax1.set_xlim(-5.5, 5.5)
+        ax1.set_ylim(-9, 9)
 
+    st.subheader(f"${power_str}$")
     ax1.axhline(0, color='black', lw=1.2, zorder=1)
     ax1.axvline(0, color='black', lw=1.2, zorder=1)
     ax1.plot(x1, y1, lw=2.2, color='#1f77b4', zorder=3)
     ax1.grid(True, linestyle=':', alpha=0.7, zorder=0)
-    ax1.set_xlim(-5.5, 5.5)
-    ax1.set_ylim(-9, 9)
     ax1.tick_params(labelsize=10)
     st.pyplot(fig1)
 
