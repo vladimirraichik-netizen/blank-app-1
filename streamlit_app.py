@@ -29,7 +29,7 @@ else:
     selected_rat = st.sidebar.selectbox("Select rational power", list(rational_options.keys()))
     p, q = rational_options[selected_rat]
 
-show_inverse = st.sidebar.checkbox("Show Inverse Function & Symmetry (Power)", value=False)
+show_inverse = st.sidebar.checkbox("Show Inverse Function & Symmetry", value=False)
 show_exp_inverse = st.sidebar.checkbox("Show Inverse & Symmetry (Exp/Log)", value=True)
 
 a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
@@ -67,7 +67,9 @@ with col1:
             ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
             ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', zorder=3)
         else:
-            x_min = 0.001 if (n < 0 and show_inverse) else -5.5
+            # Если четная степень и включена обратная функция, ограничиваем область x >= 0 для взаимной обратимости
+            is_even = (n > 0 and n % 2 == 0)
+            x_min = 0.001 if (n < 0 or (is_even and show_inverse)) else -5.5
             x1 = np.linspace(x_min, 5.5, 3000)
             y1 = x1**n
             y1[y1 > 100] = np.nan
@@ -155,7 +157,7 @@ with col1:
                 ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
                 ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', zorder=3)
             else:
-                x_min = 0.001 if (show_inverse and (q % 2 == 1 or p < 0)) else -5.5
+                x_min = 0.001 if (show_inverse and (q % 2 == 1 or p < 0 or (q % 2 == 0))) else -5.5
                 x1 = np.linspace(x_min, 5.5, 3000)
                 if q % 2 == 0:
                     y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
