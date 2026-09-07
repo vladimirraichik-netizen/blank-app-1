@@ -4,23 +4,12 @@ import numpy as np
 
 st.set_page_config(layout="wide", page_title="חקר פונקציות", page_icon="📈")
 
-# Жесткий принудительный LTR для слайдеров, чтобы иврит не переворачивал шкалу
-st.markdown("""
-<style>
-    div[data-baseweb="slider"] {
-        direction: ltr !important;
-    }
-    .stSlider {
-        direction: ltr !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגריתמית")
 
-st.sidebar.header("הגדרות פרמטרים")
-n = st.sidebar.slider("בחר חזקה (n)", -5, 5, 2, 1)
-a = st.sidebar.slider("בחר בסיס (a)", 0.1, 5.0, 2.0, 0.05)
+# Переводим подписи слайдеров на английский, чтобы избежать RTL-инверсии шкалы
+st.sidebar.header("Parameters")
+n = st.sidebar.slider("Power (n)", -5, 5, 2, 1)
+a = st.sidebar.slider("Base (a)", 0.1, 5.0, 2.0, 0.05)
 
 col1, col2 = st.columns(2, gap="large")
 
