@@ -17,7 +17,6 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
-    # Заменили степень 3/2 на классический вид с корнем из x^3
     rational_options = {
         "√x": (1, 2),
         "√x³": (3, 2),
@@ -29,6 +28,9 @@ else:
     }
     selected_rat = st.sidebar.selectbox("Select rational power", list(rational_options.keys()))
     p, q = rational_options[selected_rat]
+
+# Чекбокс для демонстрации симметрии относительно y = x
+show_symmetry = st.sidebar.checkbox("Show symmetry line (y = x)", value=True)
 
 a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
 a_lt1 = st.sidebar.number_input("Base 0 < a < 1 (Decay)", min_value=0.1, max_value=0.95, value=0.5, step=0.05)
@@ -136,6 +138,11 @@ with col1:
                 
         ax1.set_xlim(-5.5, 5.5)
         ax1.set_ylim(-9, 9)
+
+    # Добавляем линию симметрии y = x в первую колонку при включенном чекбоксе
+    if show_symmetry:
+        x_sym = np.linspace(-9, 9, 200)
+        ax1.plot(x_sym, x_sym, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
 
     st.subheader(f"${power_str}$")
     ax1.axhline(0, color='black', lw=1.2, zorder=1)
