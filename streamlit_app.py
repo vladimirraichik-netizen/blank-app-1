@@ -9,7 +9,7 @@ st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגרית�
 st.sidebar.header("Parameters")
 func_type = st.sidebar.selectbox(
     "Power Function Type", 
-    ["Integer Power (x^n)", "Root Function (n-th root)", "Rational Power (x^(p/q))"]
+    ["Integer Power (x^n)", "Root Function (n-th root)", "Rational Power (Irreducible fractions)"]
 )
 
 if func_type == "Integer Power (x^n)":
@@ -17,8 +17,18 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
-    p = st.sidebar.number_input("Numerator (p)", min_value=-5, max_value=5, value=1, step=1)
-    q = st.sidebar.number_input("Denominator (q)", min_value=1, max_value=6, value=2, step=1)
+    # Словарь готовых красивых несократимых дробей (отображение -> числовое значение p/q)
+    rational_options = {
+        "x^(1/2)  (Sqrt)": (1, 2),
+        "x^(3/2)  (x * Sqrt(x))": (3, 2),
+        "x^(1/3)  (Cube Root)": (1, 3),
+        "x^(2/3)": (2, 3),
+        "x^(3/4)": (3, 4),
+        "x^(-1/2) (1 / Sqrt(x))": (-1, 2),
+        "x^(-1/3) (1 / Cube Root)": (-1, 3)
+    }
+    selected_rat = st.sidebar.selectbox("Select irreducible power (p/q)", list(rational_options.keys()))
+    p, q = rational_options[selected_rat]
 
 a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
 a_lt1 = st.sidebar.number_input("Base 0 < a < 1 (Decay)", min_value=0.1, max_value=0.95, value=0.5, step=0.05)
@@ -66,15 +76,17 @@ with col1:
         ax1.set_ylim(-9, 9)
         
     else:
-        power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
+        # Красивое LaTeX отображение несократимой дроби
+        if p < 0:
+            abs_p = abs(p)
+            power_str = f"y = \\frac{{1}}{{x^{{{\\frac{{{abs_p}}}{{{q}}}}}}}}"
+        else:
+            power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
         
         with np.errstate(divide='ignore', invalid='ignore'):
-            # Корректный расчет для рациональной степени p/q
             if q % 2 == 1:
-                # Если знаменатель нечетный, корень извлекается и из отрицательных
                 y1 = np.sign(x1) * (np.abs(x1) ** (p / q))
             else:
-                # Если знаменатель четный, область определения x >= 0
                 y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
                 
             if p < 0:
