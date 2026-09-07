@@ -56,43 +56,65 @@ with col1:
         is_even = (n > 0 and n % 2 == 0)
         
         if n < 0 and not show_inverse:
-            x_left = np.linspace(-5.5, -0.001, 2000)
-            x_right = np.linspace(0.001, 5.5, 2000)
+            x_left = np.linspace(-5.5, -0.01, 2000)
+            x_right = np.linspace(0.01, 5.5, 2000)
             y_left = x_left**n
             y_right = x_right**n
-            y_left[y_left > 100] = np.nan
-            y_left[y_left < -100] = np.nan
-            y_right[y_right > 100] = np.nan
-            y_right[y_right < -100] = np.nan
+            y_left[np.abs(y_left) > 20] = np.nan
+            y_right[np.abs(y_right) > 20] = np.nan
             ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
             ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', zorder=3)
         else:
-            x_min = 0.001 if (n < 0 or (is_even and show_inverse)) else -5.5
-            x1 = np.linspace(x_min, 5.5, 3000)
-            y1 = x1**n
-            y1[y1 > 100] = np.nan
-            y1[y1 < -100] = np.nan
-            ax1.plot(x1, y1, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
+            x_min = 0.01 if (n < 0 or (is_even and show_inverse)) else -5.5
+            if n < 0 and show_inverse and n % 2 != 0:
+                x_min = -5.5  # Для нечетных отрицательных область полная с разрывом в 0
             
-            if show_inverse and n != 0:
-                if n > 0 and n % 2 != 0:
-                    x_pos = np.linspace(-5.5, 5.5, 3000)
-                    y_inv = np.sign(x_pos) * (np.abs(x_pos) ** (1/n))
-                    inv_label = f"$y = \\sqrt[{n}]{{x}}$" if n > 2 else "$y = \\sqrt[3]{x}$"
-                    sym_min = -5.5
-                else:
-                    x_pos = np.linspace(0.001 if n < 0 else 0, 5.5, 3000)
-                    y_inv = x_pos**(1/n)
-                    inv_label = f"$y = \\sqrt[{n}]{{x}}$" if n > 2 else ("$y = \\sqrt{x}$" if n == 2 else "$y = x$")
-                    sym_min = 0 if n > 0 else 0.001
+            if n < 0:
+                x_left = np.linspace(-5.5, -0.01, 2000)
+                x_right = np.linspace(0.01, 5.5, 2000)
+                y_left = x_left**n
+                y_right = x_right**n
+                y_left[np.abs(y_left) > 20] = np.nan
+                y_right[np.abs(y_right) > 20] = np.nan
+                ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
+                ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
                 
-                y_inv[y_inv > 100] = np.nan
-                y_inv[y_inv < -100] = np.nan
-                ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=inv_label, zorder=3)
+                if show_inverse:
+                    y_inv_left = np.sign(x_left) * (np.abs(x_left) ** (1/n)) # для отрицательных n обратная та же или аналогичная
+                    # Аккуратная обработка обратной для отрицательных степеней
+                    y_inv_left = x_left**n 
+                    y_inv_right = x_right**n
+                    y_inv_left[np.abs(y_inv_left) > 20] = np.nan
+                    y_inv_right[np.abs(y_inv_right) > 20] = np.nan
+                    
+                    ax1.plot(x_left, y_inv_left, lw=2.2, color='#ff7f0e', label=f'${power_str}$', zorder=3)
+                    ax1.plot(x_right, x_inv_right, lw=2.2, color='#ff7f0e', zorder=3)
+                    ax1.plot(np.linspace(-5.5, 5.5, 200), np.linspace(-5.5, 5.5, 200), color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+                    ax1.legend(fontsize=9, loc='upper left')
+            else:
+                x1 = np.linspace(x_min, 5.5, 3000)
+                y1 = x1**n
+                y1[np.abs(y1) > 20] = np.nan
+                ax1.plot(x1, y1, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
                 
-                x_sym = np.linspace(sym_min, 5.5, 200)
-                ax1.plot(x_sym, x_sym, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
-                ax1.legend(fontsize=9, loc='upper left')
+                if show_inverse and n != 0:
+                    if n > 0 and n % 2 != 0:
+                        x_pos = np.linspace(-5.5, 5.5, 3000)
+                        y_inv = np.sign(x_pos) * (np.abs(x_pos) ** (1/n))
+                        inv_label = f"$y = \\sqrt[{n}]{{x}}$" if n > 2 else "$y = \\sqrt[3]{x}$"
+                        sym_min = -5.5
+                    else:
+                        x_pos = np.linspace(0, 5.5, 3000)
+                        y_inv = x_pos**(1/n)
+                        inv_label = f"$y = \\sqrt[{n}]{{x}}$" if n > 2 else ("$y = \\sqrt{x}$" if n == 2 else "$y = x$")
+                        sym_min = 0
+                    
+                    y_inv[np.abs(y_inv) > 20] = np.nan
+                    ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=inv_label, zorder=3)
+                    
+                    x_sym = np.linspace(sym_min, 5.5, 200)
+                    ax1.plot(x_sym, x_sym, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+                    ax1.legend(fontsize=9, loc='upper left')
                 
         ax1.set_xlim(-5.5, 5.5)
         ax1.set_ylim(-9, 9)
@@ -124,8 +146,7 @@ with col1:
                 y_inv = x_pos**root_n
                 sym_min = 0
                 
-            y_inv[y_inv > 100] = np.nan
-            y_inv[y_inv < -100] = np.nan
+            y_inv[np.abs(y_inv) > 20] = np.nan
             ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=f'${inv_str}$', zorder=3)
             
             x_sym = np.linspace(sym_min, 5.5, 200)
@@ -163,37 +184,46 @@ with col1:
         
         with np.errstate(divide='ignore', invalid='ignore'):
             is_full_domain = (q % 2 != 0 and p > 0 and p % 2 != 0)
+            is_full_negative_domain = (p < 0 and q % 2 != 0 and abs(p) % 2 != 0) # например y = 1 / cbrt(x)
             
-            # Раздельная отрисовка для отрицательных степеней (с разрывом в нуле)
-            if p < 0 and q % 2 == 1 and not show_inverse:
-                x_left = np.linspace(-5.5, -0.001, 2000)
-                x_right = np.linspace(0.001, 5.5, 2000)
-                y_left = np.sign(x_left) * (np.abs(x_left) ** (p / q))
-                y_right = np.sign(x_right) * (np.abs(x_right) ** (p / q))
-                y_left[y_left > 100] = np.nan
-                y_left[y_left < -100] = np.nan
-                y_right[y_right > 100] = np.nan
-                y_right[y_right < -100] = np.nan
-                ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
-                ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', zorder=3)
-            elif p < 0 and show_inverse:
-                x_left = np.linspace(-5.5, -0.001, 2000)
-                x_right = np.linspace(0.001, 5.5, 2000)
-                y_left = np.sign(x_left) * (np.abs(x_left) ** (p / q))
-                y_right = np.sign(x_right) * (np.abs(x_right) ** (p / q))
-                y_left[y_left > 100] = np.nan
-                y_left[y_left < -100] = np.nan
-                y_right[y_right > 100] = np.nan
-                y_right[y_right < -100] = np.nan
+            if p < 0:
+                x_left = np.linspace(-5.5, -0.01, 2000)
+                x_right = np.linspace(0.01, 5.5, 2000)
+                
+                if q % 2 != 0 and abs(p) % 2 != 0:
+                    y_left = -1 * (np.abs(x_left) ** (p / q)) # корректный знак для нечетных корней из отрицательных
+                    # точнее через sign:
+                    y_left = np.sign(x_left) * (np.abs(x_left) ** (p / q))
+                    y_right = np.sign(x_right) * (np.abs(x_right) ** (p / q))
+                else:
+                    y_left = x_left ** (p / q)
+                    y_right = x_right ** (p / q)
+                
+                y_left[np.abs(y_left) > 20] = np.nan
+                y_right[np.abs(y_right) > 20] = np.nan
+                
                 ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
                 ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
                 
-                x_pos = np.linspace(0.001, 5.5, 3000)
-                y_inv = x_pos**(q/p)
-                y_inv[y_inv > 100] = np.nan
-                ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=f'${inv_str}$', zorder=3)
-                ax1.plot(x_pos, x_pos, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
-                ax1.legend(fontsize=9, loc='upper left')
+                if show_inverse:
+                    if q % 2 != 0 and abs(p) % 2 != 0:
+                        y_inv_left = np.sign(x_left) * (np.abs(x_left) ** (q / p))
+                        y_inv_right = np.sign(x_right) * (np.abs(x_right) ** (q / p))
+                        sym_min = -5.5
+                    else:
+                        y_inv_left = np.nan * x_left
+                        y_inv_right = x_right ** (q / p)
+                        sym_min = 0.01
+                        
+                    y_inv_left[np.abs(y_inv_left) > 20] = np.nan
+                    y_inv_right[np.abs(y_inv_right) > 20] = np.nan
+                    
+                    ax1.plot(x_left, y_inv_left, lw=2.2, color='#ff7f0e', label=f'${inv_str}$', zorder=3)
+                    ax1.plot(x_right, y_inv_right, lw=2.2, color='#ff7f0e', zorder=3)
+                    
+                    x_sym = np.linspace(sym_min, 5.5, 200)
+                    ax1.plot(x_sym, x_sym, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+                    ax1.legend(fontsize=9, loc='upper left')
             else:
                 x_min = -5.5 if is_full_domain else 0.0
                 x1 = np.linspace(x_min, 5.5, 3000)
@@ -205,8 +235,7 @@ with col1:
                     else:
                         y1 = np.sign(x1) * ((np.abs(x1) ** (p / q)))
                 
-                y1[y1 > 100] = np.nan
-                y1[y1 < -100] = np.nan
+                y1[np.abs(y1) > 20] = np.nan
                 ax1.plot(x1, y1, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
                 
                 if show_inverse:
@@ -218,10 +247,8 @@ with col1:
                     else:
                         y_inv = x_pos**(q/p)
                         
-                    y_inv[y_inv > 100] = np.nan
-                    y_inv[y_inv < -100] = np.nan
+                    y_inv[np.abs(y_inv) > 20] = np.nan
                     ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=f'${inv_str}$', zorder=3)
-                    
                     ax1.plot(x_pos, x_pos, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
                     ax1.legend(fontsize=9, loc='upper left')
                 
