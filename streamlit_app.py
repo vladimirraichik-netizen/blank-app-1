@@ -17,9 +17,10 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
+    # Заменили степень 3/2 на классический вид с корнем из x^3
     rational_options = {
         "√x": (1, 2),
-        "x · √x": (3, 2),
+        "√x³": (3, 2),
         "∛x": (1, 3),
         "∛x²": (2, 3),
         "∜x³": (3, 4),
@@ -49,7 +50,6 @@ with col1:
             power_str = f"y = \\frac{{1}}{{x^{{{abs_n}}}}}" if abs_n > 1 else "y = \\frac{1}{x}"
             
         if n < 0:
-            # Строим раздельно левую и правую ветки для функций с разрывом в нуле
             x_left = np.linspace(-5.5, -0.001, 2000)
             x_right = np.linspace(0.001, 5.5, 2000)
             y_left = x_left**n
@@ -92,7 +92,7 @@ with col1:
         if p == 1 and q == 2:
             power_str = "y = \\sqrt{x}"
         elif p == 3 and q == 2:
-            power_str = "y = x\\sqrt{x}"
+            power_str = "y = \\sqrt{x^3}"
         elif p == 1 and q == 3:
             power_str = "y = \\sqrt[3]{x}"
         elif p == 2 and q == 3:
@@ -108,11 +108,8 @@ with col1:
         
         with np.errstate(divide='ignore', invalid='ignore'):
             if p < 0 and q % 2 == 1:
-                # Отрицательная дробная степень с нечетным знаменателем (разрыв в 0)
                 x_left = np.linspace(-5.5, -0.001, 2000)
                 x_right = np.linspace(0.001, 5.5, 2000)
-                y_left = -1 * (np.abs(x_left) ** (abs(p) / q)) # исправлено для корректного знака
-                # точный расчет для ветвей с делением на ноль
                 y_left = np.sign(x_left) * (np.abs(x_left) ** (p / q))
                 y_right = np.sign(x_right) * (np.abs(x_right) ** (p / q))
                 
