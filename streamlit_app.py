@@ -15,7 +15,7 @@ a = st.sidebar.slider("בחר בסיס (a)", 0.1, 5.0, 2.0, 0.05)
 col1, col2 = st.columns(2, gap="large")
 
 with col1:
-    st.subheader(f"פונקציית חזקה: $y = x^{n}$")
+    st.subheader(f"פונקציית חזקה: $y = x^{{{n}}}$")
     fig1, ax1 = plt.subplots(figsize=(8, 6))
     
     x1 = np.linspace(-5, 5, 1000)
@@ -42,9 +42,9 @@ with col2:
     y2_exp = a**x_exp
     y2_log = np.log(x_log) / np.log(a)
 
-    ax2.plot(x_exp, y2_exp, lw=3.5, color='#d62728', label=f'y = {a:.2f}^x')
-    ax2.plot(x_log, y2_log, lw=3.5, color='#2ca02c', label=f'y = log_{a:.2f}(x)')
-    ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.5, label='y = x')
+    ax2.plot(x_exp, y2_exp, lw=3.5, color='#d62728', label=f'$y = {a:.2f}^{{x}}$')
+    ax2.plot(x_log, y2_log, lw=3.5, color='#2ca02c', label=f'$y = \\log_{{{a:.2f}}}(x)$')
+    ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.5, label='$y = x$')
     
     ax2.axhline(0, color='black', lw=1.2)
     ax2.axvline(0, color='black', lw=1.2)
