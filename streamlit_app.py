@@ -4,6 +4,13 @@ import numpy as np
 
 st.set_page_config(layout="wide", page_title="חקר פונקציות", page_icon="📈")
 
+# Фикс направления текста и элементов для стабильности слайдеров
+st.markdown("""
+<style>
+    .stSlider { direction: ltr !important; }
+</style>
+""", unsafe_allow_html=True)
+
 st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגריתמית")
 
 st.sidebar.header("הגדרות פרמטרים")
@@ -13,7 +20,6 @@ a = st.sidebar.slider("בחר בסיס (a)", 0.1, 5.0, 2.0, 0.05)
 col1, col2 = st.columns(2, gap="large")
 
 with col1:
-    # Исправленное отображение степени
     if n == 0:
         power_str = "y = 1"
     elif n == 1:
