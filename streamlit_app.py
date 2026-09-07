@@ -114,21 +114,22 @@ with col1:
         ax1.set_ylim(-9, 9)
         
     else:
+        # Задаем красивое отображение через радикалы для функций и их обратных
         if p == 1 and q == 2:
             power_str = "y = \\sqrt{x}"
             inv_str = "y = x^2"
         elif p == 3 and q == 2:
             power_str = "y = \\sqrt{x^3}"
-            inv_str = "y = x^{\\frac{2}{3}}"
+            inv_str = "y = \\sqrt[3]{x^2}"
         elif p == 1 and q == 3:
             power_str = "y = \\sqrt[3]{x}"
             inv_str = "y = x^3"
         elif p == 2 and q == 3:
             power_str = "y = \\sqrt[3]{x^2}"
-            inv_str = "y = x^{\\frac{3}{2}}"
+            inv_str = "y = \\sqrt{x^3}"
         elif p == 3 and q == 4:
             power_str = "y = \\sqrt[4]{x^3}"
-            inv_str = "y = x^{\\frac{4}{3}}"
+            inv_str = "y = \\sqrt[3]{x^4}"
         elif p == -1 and q == 2:
             power_str = "y = \\frac{1}{\\sqrt{x}}"
             inv_str = "y = \\frac{1}{x^2}"
