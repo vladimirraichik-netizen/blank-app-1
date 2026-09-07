@@ -17,15 +17,15 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
-    # Классические математические обозначения в привычном для учебников виде
+    # Только чистый математический вид без лишних символов
     rational_options = {
-        "x^(1/2)  (√x)": (1, 2),
-        "x^(3/2)  (x · √x)": (3, 2),
-        "x^(1/3)  (∛x)": (1, 3),
-        "x^(2/3)  (∛(x²))": (2, 3),
-        "x^(3/4)  (∜(x³))": (3, 4),
-        "x^(-1/2) (1 / √x)": (-1, 2),
-        "x^(-1/3) (1 / ∛x)": (-1, 3)
+        "x^(1/2)  —  √x": (1, 2),
+        "x^(3/2)  —  x·√x": (3, 2),
+        "x^(1/3)  —  ∛x": (1, 3),
+        "x^(2/3)  —  ∛(x²)": (2, 3),
+        "x^(3/4)  —  ∜(x³)": (3, 4),
+        "x^(-1/2) —  1/√x": (-1, 2),
+        "x^(-1/3) —  1/∛x": (-1, 3)
     }
     selected_rat = st.sidebar.selectbox("Select rational power", list(rational_options.keys()))
     p, q = rational_options[selected_rat]
@@ -76,7 +76,6 @@ with col1:
         ax1.set_ylim(-9, 9)
         
     else:
-        # Красивый LaTeX-заголовок в зависимости от выбранной дроби
         if p == 1 and q == 2:
             power_str = "y = \\sqrt{x}"
         elif p == 3 and q == 2:
