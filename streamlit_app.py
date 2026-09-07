@@ -1,3 +1,11 @@
+import subprocess
+import sys
+
+try:
+    import matplotlib
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "matplotlib", "numpy"])
+
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
