@@ -6,10 +6,10 @@ st.set_page_config(layout="wide", page_title="חקר פונקציות", page_ico
 
 st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגריתמית")
 
-# Переводим подписи слайдеров на английский, чтобы избежать RTL-инверсии шкалы
 st.sidebar.header("Parameters")
-n = st.sidebar.slider("Power (n)", -5, 5, 2, 1)
-a = st.sidebar.slider("Base (a)", 0.1, 5.0, 2.0, 0.05)
+# Используем числовые поля ввода взамен капризных слайдеров
+n = st.sidebar.number_input("Power (n)", min_value=-5, max_value=5, value=2, step=1)
+a = st.sidebar.number_input("Base (a)", min_value=0.1, max_value=5.0, value=2.0, step=0.05)
 
 col1, col2 = st.columns(2, gap="large")
 
