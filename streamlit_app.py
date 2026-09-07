@@ -2,7 +2,6 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Широкий формат страницы для больших графиков
 st.set_page_config(layout="wide", page_title="חקר פונקציות", page_icon="📈")
 
 st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגריתמית")
@@ -11,16 +10,29 @@ st.sidebar.header("הגדרות פרמטרים")
 n = st.sidebar.slider("בחר חזקה (n)", -5, 5, 2, 1)
 a = st.sidebar.slider("בחר בסיס (a)", 0.1, 5.0, 2.0, 0.05)
 
-# Создаем две широкие колонки для крупных графиков
 col1, col2 = st.columns(2, gap="large")
 
 with col1:
-    st.subheader(f"פונקציית חזקה: $y = x^{{{n}}}$")
+    # Красивое отображение степени в заголовке
+    if n == 0:
+        power_str = "y = 1"
+    elif n == 1:
+        power_str = "y = x"
+    elif n > 0:
+        power_str = f"y = x^{{{n}}}"
+    else:
+        power_str = f"y = \\frac{{1}}{{x^{{{abs(n)}}}}}" if abs(n) > 1 else "y = \\frac{1}{x}"
+        
+    st.subheader(f"פונקציית חזקה: ${power_str}$")
+    
     fig1, ax1 = plt.subplots(figsize=(8, 6))
     
-    x1 = np.linspace(-5, 5, 1000)
+    x1 = np.linspace(-5, 5, 1200)
     with np.errstate(divide='ignore', invalid='ignore'):
         y1 = x1**n
+        # Корректный разрыв для дробных степеней с нечетным знаменателем или отрицательных
+        if n < 0:
+            y1[np.abs(x1) < 1e-2] = np.nan
         y1[y1 > 50] = np.nan
         y1[y1 < -50] = np.nan
 
