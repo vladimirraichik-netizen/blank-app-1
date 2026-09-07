@@ -9,7 +9,7 @@ st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגרית�
 st.sidebar.header("Parameters")
 func_type = st.sidebar.selectbox(
     "Power Function Type", 
-    ["Integer Power (x^n)", "Root Function (n-th root)", "Rational Power (Irreducible fractions)"]
+    ["Integer Power (x^n)", "Root Function (n-th root)", "Rational Power (x^(p/q))"]
 )
 
 if func_type == "Integer Power (x^n)":
@@ -17,16 +17,17 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
+    # Красивые математические обозначения в привычном для учебников виде
     rational_options = {
-        "x^(1/2)  (Sqrt)": (1, 2),
-        "x^(3/2)  (x * Sqrt(x))": (3, 2),
-        "x^(1/3)  (Cube Root)": (1, 3),
-        "x^(2/3)": (2, 3),
-        "x^(3/4)": (3, 4),
-        "x^(-1/2) (1 / Sqrt(x))": (-1, 2),
-        "x^(-1/3) (1 / Cube Root)": (-1, 3)
+        "x^{½}  (√x)": (1, 2),
+        "x^{³/₂}  (x·√x)": (3, 2),
+        "x^{⅓}  (∛x)": (1, 3),
+        "x^{²/₃}  (∛(x²))": (2, 3),
+        "x^{³/₄}  (∜(x³))": (3, 4),
+        "x^{-½}  (1/√x)": (-1, 2),
+        "x^{-⅓}  (1/∛x)": (-1, 3)
     }
-    selected_rat = st.sidebar.selectbox("Select irreducible power (p/q)", list(rational_options.keys()))
+    selected_rat = st.sidebar.selectbox("Select rational power", list(rational_options.keys()))
     p, q = rational_options[selected_rat]
 
 a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
@@ -75,10 +76,22 @@ with col1:
         ax1.set_ylim(-9, 9)
         
     else:
-        if p < 0:
-            power_str = f"y = \\frac{{1}}{{x^{{{abs(p)}/{q}}}"
+        if p == 1 and q == 2:
+            power_str = "y = \\sqrt{x}"
+        elif p == 3 and q == 2:
+            power_str = "y = x\\sqrt{x}"
+        elif p == 1 and q == 3:
+            power_str = "y = \\sqrt[3]{x}"
+        elif p == 2 and q == 3:
+            power_str = "y = \\sqrt[3]{x^2}"
+        elif p == 3 and q == 4:
+            power_str = "y = \\sqrt[4]{x^3}"
+        elif p == -1 and q == 2:
+            power_str = "y = \\frac{1}{\\sqrt{x}}"
+        elif p == -1 and q == 3:
+            power_str = "y = \\frac{1}{\\sqrt[3]{x}}"
         else:
-            power_str = f"y = x^{{{p}/{q}}}"
+            power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
         
         with np.errstate(divide='ignore', invalid='ignore'):
             if q % 2 == 1:
