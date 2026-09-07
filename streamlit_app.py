@@ -1,55 +1,56 @@
-import os
-import subprocess
-import sys
-
-# Принудительная установка библиотек в окружение Streamlit
-try:
-    import matplotlib
-    import numpy as np
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "matplotlib", "numpy"])
-
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 
-st.title("חקר פונקציות: חזקה, מעריכית ולוגריתמית")
+# Широкий формат страницы для больших графиков
+st.set_page_config(layout="wide", page_title="חקר פונקציות", page_icon="📈")
 
-st.sidebar.header("פרמטרים")
+st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגריתמית")
+
+st.sidebar.header("הגדרות פרמטרים")
 n = st.sidebar.slider("בחר חזקה (n)", -5, 5, 2, 1)
 a = st.sidebar.slider("בחר בסיס (a)", 0.1, 5.0, 2.0, 0.05)
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+# Создаем две широкие колонки для крупных графиков
+col1, col2 = st.columns(2, gap="large")
 
-x1 = np.linspace(-5, 5, 600)
-x2 = np.linspace(0.01, 8, 600)
+with col1:
+    st.subheader(f"פונקציית חזקה: $y = x^{n}$")
+    fig1, ax1 = plt.subplots(figsize=(8, 6))
+    
+    x1 = np.linspace(-5, 5, 1000)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        y1 = x1**n
+        y1[y1 > 50] = np.nan
+        y1[y1 < -50] = np.nan
 
-with np.errstate(divide='ignore', invalid='ignore'):
-    y1 = x1**n
-    y1[y1 > 100] = np.nan
-    y1[y1 < -100] = np.nan
+    ax1.plot(x1, y1, lw=3.5, color='#1f77b4')
+    ax1.axhline(0, color='black', lw=1.2)
+    ax1.axvline(0, color='black', lw=1.2)
+    ax1.grid(True, linestyle=':', alpha=0.7)
+    ax1.set_xlim(-6, 6)
+    ax1.set_ylim(-10, 10)
+    ax1.tick_params(labelsize=12)
+    st.pyplot(fig1)
 
-ax1.plot(x1, y1, lw=2.5, color='blue')
-ax1.set_title(f'Power Function: y = x^{n}', fontsize=12)
-ax1.axhline(0, color='black', lw=1)
-ax1.axvline(0, color='black', lw=1)
-ax1.grid(True, linestyle=':')
-ax1.set_xlim(-6, 6)
-ax1.set_ylim(-15, 15)
+with col2:
+    st.subheader(f"מעריכית ולוגריתמית ($a = {a:.2f}$)")
+    fig2, ax2 = plt.subplots(figsize=(8, 6))
+    
+    x_exp = np.linspace(-5, 5, 1000)
+    x_log = np.linspace(0.01, 8, 1000)
+    y2_exp = a**x_exp
+    y2_log = np.log(x_log) / np.log(a)
 
-y2_exp = a**x1
-y2_log = np.log(x2) / np.log(a)
-
-ax2.plot(x1, y2_exp, lw=2.5, color='red', label=f'y = {a:.2f}^x')
-ax2.plot(x2, y2_log, lw=2.5, color='darkgreen', label=f'y = log_{a:.2f}(x)')
-ax2.plot(x2, x2, color='gray', linestyle='--', label='y = x')
-ax2.set_title(f'Exponential & Logarithmic (a = {a:.2f})', fontsize=12)
-ax2.axhline(0, color='black', lw=1)
-ax2.axvline(0, color='black', lw=1)
-ax2.grid(True, linestyle=':')
-ax2.set_xlim(-6, 8)
-ax2.set_ylim(-10, 15)
-ax2.legend()
-
-plt.tight_layout()
-st.pyplot(fig)
+    ax2.plot(x_exp, y2_exp, lw=3.5, color='#d62728', label=f'y = {a:.2f}^x')
+    ax2.plot(x_log, y2_log, lw=3.5, color='#2ca02c', label=f'y = log_{a:.2f}(x)')
+    ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.5, label='y = x')
+    
+    ax2.axhline(0, color='black', lw=1.2)
+    ax2.axvline(0, color='black', lw=1.2)
+    ax2.grid(True, linestyle=':', alpha=0.7)
+    ax2.set_xlim(-6, 8)
+    ax2.set_ylim(-10, 12)
+    ax2.legend(fontsize=12, loc='upper left')
+    ax2.tick_params(labelsize=12)
+    st.pyplot(fig2)
