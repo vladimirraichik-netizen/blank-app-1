@@ -76,13 +76,24 @@ with col1:
             ax1.plot(x1, y1, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
             
             if show_inverse and n != 0:
-                x_pos = np.linspace(0.001 if n < 0 else 0, 5.5, 3000)
-                y_inv = x_pos**(1/n)
+                # Для нечетных степеней обратная функция существует на всей прямой через знак
+                if n > 0 and n % 2 != 0:
+                    x_pos = np.linspace(-5.5, 5.5, 3000)
+                    y_inv = np.sign(x_pos) * (np.abs(x_pos) ** (1/n))
+                    inv_label = f"$y = \\sqrt[{n}]{{x}}$"
+                else:
+                    x_pos = np.linspace(0.001 if n < 0 else 0, 5.5, 3000)
+                    y_inv = x_pos**(1/n)
+                    inv_label = f"$y = \\sqrt[{n}]{{x}}$" if n > 2 else ("$y = \\sqrt{x}$" if n == 2 else "$y = x$")
+                
                 y_inv[y_inv > 100] = np.nan
-                inv_label = f"$y = \\sqrt[{n}]{{x}}$" if n > 2 else ("$y = \\sqrt{x}$" if n == 2 else "$y = x$")
+                y_inv[y_inv < -100] = np.nan
                 ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=inv_label, zorder=3)
-                # Линия симметрии ограничена областью существования графиков (x >= 0)
-                ax1.plot(x_pos, x_pos, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+                
+                # Линия симметрии: для нечетных на всю область, для четных — только x >= 0
+                sym_min = -5.5 if (n > 0 and n % 2 != 0) else (0 if n > 0 else 0.001)
+                x_sym = np.linspace(sym_min, 5.5, 200)
+                ax1.plot(x_sym, x_sym, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
                 ax1.legend(fontsize=9, loc='upper left')
                 
         ax1.set_xlim(-5.5, 5.5)
@@ -106,11 +117,21 @@ with col1:
         ax1.plot(x1, y1, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
         
         if show_inverse:
-            x_pos = np.linspace(0, 5.5, 3000)
-            y_inv = x_pos**root_n
+            if root_n % 2 != 0:
+                x_pos = np.linspace(-5.5, 5.5, 3000)
+                y_inv = x_pos**root_n
+                sym_min = -5.5
+            else:
+                x_pos = np.linspace(0, 5.5, 3000)
+                y_inv = x_pos**root_n
+                sym_min = 0
+                
             y_inv[y_inv > 100] = np.nan
+            y_inv[y_inv < -100] = np.nan
             ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=f'${inv_str}$', zorder=3)
-            ax1.plot(x_pos, x_pos, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+            
+            x_sym = np.linspace(sym_min, 5.5, 200)
+            ax1.plot(x_sym, x_sym, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
             ax1.legend(fontsize=9, loc='upper left')
             
         ax1.set_xlim(-5.5, 5.5)
