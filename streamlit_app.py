@@ -27,15 +27,16 @@ with col1:
     
     fig1, ax1 = plt.subplots(figsize=(8, 6))
     
-    x1 = np.linspace(-5, 5, 1200)
+    x1 = np.linspace(-5, 5, 1500)
     with np.errstate(divide='ignore', invalid='ignore'):
         y1 = x1**n
         if n < 0:
-            y1[np.abs(x1) < 0.05] = np.nan
+            y1[np.abs(x1) < 0.02] = np.nan
         y1[y1 > 45] = np.nan
         y1[y1 < -45] = np.nan
 
-    ax1.plot(x1, y1, lw=3.5, color='#1f77b4')
+    # Оптимальная толщина для видимости асимптот без слипания
+    ax1.plot(x1, y1, lw=2.5, color='#1f77b4')
     ax1.axhline(0, color='black', lw=1.2)
     ax1.axvline(0, color='black', lw=1.2)
     ax1.grid(True, linestyle=':', alpha=0.7)
@@ -48,17 +49,15 @@ with col2:
     st.subheader(f"מעריכית ולוגריתמית ($a = {a:.2f}$)")
     fig2, ax2 = plt.subplots(figsize=(8, 6))
     
-    x_exp = np.linspace(-5, 5, 1000)
-    # Ограничиваем область логарифма, чтобы вертикальная асимптота не сливалась с осью Y, а график не уходил в бесконечный минус внизу
-    x_log = np.linspace(0.03, 7.5, 1000)
+    # Полный диапазон без обрезки асимптот
+    x_exp = np.linspace(-5, 5, 1500)
+    x_log = np.linspace(0.001, 7.5, 1500)
+    
     y2_exp = a**x_exp
     y2_log = np.log(x_log) / np.log(a)
 
-    # Обрезаем значения логарифма снизу, чтобы линия не прилипала к нижней границе графика
-    y2_log[y2_log < -8] = np.nan
-
-    ax2.plot(x_exp, y2_exp, lw=3.5, color='#d62728', label=f'$y = {a:.2f}^{{x}}$')
-    ax2.plot(x_log, y2_log, lw=3.5, color='#2ca02c', label=f'$y = \\log_{{{a:.2f}}}(x)$')
+    ax2.plot(x_exp, y2_exp, lw=2.5, color='#d62728', label=f'$y = {a:.2f}^{{x}}$')
+    ax2.plot(x_log, y2_log, lw=2.5, color='#2ca02c', label=f'$y = \\log_{{{a:.2f}}}(x)$')
     ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.5, label='$y = x$')
     
     ax2.axhline(0, color='black', lw=1.2)
