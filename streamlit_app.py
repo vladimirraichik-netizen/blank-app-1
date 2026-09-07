@@ -1,3 +1,14 @@
+import os
+import subprocess
+import sys
+
+# Принудительная установка библиотек в окружение Streamlit
+try:
+    import matplotlib
+    import numpy as np
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "matplotlib", "numpy"])
+
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
