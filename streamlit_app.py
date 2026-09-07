@@ -17,14 +17,15 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
+    # Очищенный список без пояснений в скобках
     rational_options = {
-        "√x  (квадратный корень)": (1, 2),
-        "x · √x  (степень 3/2)": (3, 2),
-        "∛x  (кубический корень)": (1, 3),
-        "∛(x²)  (степень 2/3)": (2, 3),
-        "∜(x³)  (степень 3/4)": (3, 4),
-        "1 / √x  (отрицательная)": (-1, 2),
-        "1 / ∛x  (отрицательная)": (-1, 3)
+        "√x": (1, 2),
+        "x · √x": (3, 2),
+        "∛x": (1, 3),
+        "∛(x²)": (2, 3),
+        "∜(x³)": (3, 4),
+        "1 / √x": (-1, 2),
+        "1 / ∛x": (-1, 3)
     }
     selected_rat = st.sidebar.selectbox("Select rational power", list(rational_options.keys()))
     p, q = rational_options[selected_rat]
@@ -93,14 +94,13 @@ with col1:
             power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
         
         with np.errstate(divide='ignore', invalid='ignore'):
-            # Исправленный математический расчет с учетом четности корней и степеней
             if q % 2 == 0:
-                y1 = (np.abs(x1) ** p) ** (1 / q)
+                y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
             else:
                 if p % 2 == 0:
-                    y1 = (np.abs(x1) ** p) ** (1 / q)
+                    y1 = (np.abs(x1) ** (p / q))
                 else:
-                    y1 = np.sign(x1) * ((np.abs(x1) ** p) ** (1 / q))
+                    y1 = np.sign(x1) * ((np.abs(x1) ** (p / q)))
                 
             if p < 0:
                 y1[np.abs(x1) < 0.02] = np.nan
