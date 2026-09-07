@@ -162,8 +162,9 @@ with col1:
             inv_str = f"y = x^{{\\frac{{{q}}}{{{p}}}}}"
         
         with np.errstate(divide='ignore', invalid='ignore'):
-            is_full_domain = (q % 2 != 0 and p % 2 != 0)
+            is_full_domain = (q % 2 != 0 and p > 0 and p % 2 != 0)
             
+            # Раздельная отрисовка для отрицательных степеней (с разрывом в нуле)
             if p < 0 and q % 2 == 1 and not show_inverse:
                 x_left = np.linspace(-5.5, -0.001, 2000)
                 x_right = np.linspace(0.001, 5.5, 2000)
@@ -175,11 +176,26 @@ with col1:
                 y_right[y_right < -100] = np.nan
                 ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
                 ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', zorder=3)
-            else:
-                x_min = -5.5 if (is_full_domain and not (show_inverse and q % 2 == 0)) else (0.001 if (show_inverse and (q % 2 == 1 or p < 0 or q % 2 == 0)) else -5.5)
-                if is_full_domain and not show_inverse:
-                    x_min = -5.5
+            elif p < 0 and show_inverse:
+                x_left = np.linspace(-5.5, -0.001, 2000)
+                x_right = np.linspace(0.001, 5.5, 2000)
+                y_left = np.sign(x_left) * (np.abs(x_left) ** (p / q))
+                y_right = np.sign(x_right) * (np.abs(x_right) ** (p / q))
+                y_left[y_left > 100] = np.nan
+                y_left[y_left < -100] = np.nan
+                y_right[y_right > 100] = np.nan
+                y_right[y_right < -100] = np.nan
+                ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
+                ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
                 
+                x_pos = np.linspace(0.001, 5.5, 3000)
+                y_inv = x_pos**(q/p)
+                y_inv[y_inv > 100] = np.nan
+                ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=f'${inv_str}$', zorder=3)
+                ax1.plot(x_pos, x_pos, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+                ax1.legend(fontsize=9, loc='upper left')
+            else:
+                x_min = -5.5 if is_full_domain else 0.0
                 x1 = np.linspace(x_min, 5.5, 3000)
                 if q % 2 == 0:
                     y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
@@ -194,7 +210,7 @@ with col1:
                 ax1.plot(x1, y1, lw=2.2, color='#1f77b4', label=f'${power_str}$', zorder=3)
                 
                 if show_inverse:
-                    x_pos_min = -5.5 if is_full_domain else (0.001 if p < 0 else 0)
+                    x_pos_min = -5.5 if is_full_domain else 0.0
                     x_pos = np.linspace(x_pos_min, 5.5, 3000)
                     
                     if is_full_domain:
