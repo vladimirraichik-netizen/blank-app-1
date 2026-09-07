@@ -8,9 +8,11 @@ st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגרית�
 
 st.sidebar.header("Parameters")
 n = st.sidebar.number_input("Power (n)", min_value=-5, max_value=5, value=2, step=1)
-a = st.sidebar.number_input("Base (a)", min_value=0.1, max_value=5.0, value=2.0, step=0.05)
+a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
+a_lt1 = st.sidebar.number_input("Base 0 < a < 1 (Decay)", min_value=0.1, max_value=0.95, value=0.5, step=0.05)
 
-col1, col2 = st.columns(2, gap="large")
+# Три колонки для одновременного сравнения всех графиков
+col1, col2, col3 = st.columns(3, gap="medium")
 
 with col1:
     if n == 0:
@@ -25,8 +27,7 @@ with col1:
         
     st.subheader(f"פונקציית חזקה: ${power_str}$")
     
-    fig1, ax1 = plt.subplots(figsize=(8, 6))
-    
+    fig1, ax1 = plt.subplots(figsize=(5, 5))
     x1 = np.linspace(-5, 5, 1500)
     with np.errstate(divide='ignore', invalid='ignore'):
         y1 = x1**n
@@ -35,37 +36,57 @@ with col1:
         y1[y1 > 45] = np.nan
         y1[y1 < -45] = np.nan
 
-    # Оси рисуем ниже (zorder=1), а график выше (zorder=3), задавая четкий визуальный слой
     ax1.axhline(0, color='black', lw=1.2, zorder=1)
     ax1.axvline(0, color='black', lw=1.2, zorder=1)
     ax1.plot(x1, y1, lw=2.2, color='#1f77b4', zorder=3)
-    
     ax1.grid(True, linestyle=':', alpha=0.7, zorder=0)
     ax1.set_xlim(-5.5, 5.5)
     ax1.set_ylim(-9, 9)
-    ax1.tick_params(labelsize=12)
+    ax1.tick_params(labelsize=10)
     st.pyplot(fig1)
 
 with col2:
-    st.subheader(f"מעריכית ולוגריתמית ($a = {a:.2f}$)")
-    fig2, ax2 = plt.subplots(figsize=(8, 6))
+    st.subheader(f"גידול ($a = {a_gt1:.2f} > 1$)")
+    fig2, ax2 = plt.subplots(figsize=(5, 5))
     
     x_exp = np.linspace(-5, 5, 1500)
     x_log = np.linspace(0.001, 7.5, 1500)
     
-    y2_exp = a**x_exp
-    y2_log = np.log(x_log) / np.log(a)
+    y2_exp = a_gt1**x_exp
+    y2_log = np.log(x_log) / np.log(a_gt1)
 
     ax2.axhline(0, color='black', lw=1.2, zorder=1)
     ax2.axvline(0, color='black', lw=1.2, zorder=1)
-    
-    ax2.plot(x_exp, y2_exp, lw=2.2, color='#d62728', label=f'$y = {a:.2f}^{{x}}$', zorder=3)
-    ax2.plot(x_log, y2_log, lw=2.2, color='#2ca02c', label=f'$y = \\log_{{{a:.2f}}}(x)$', zorder=3)
-    ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.5, label='$y = x$', zorder=2)
+    ax2.plot(x_exp, y2_exp, lw=2.2, color='#d62728', label=f'$y = {a_gt1:.2f}^{{x}}$', zorder=3)
+    ax2.plot(x_log, y2_log, lw=2.2, color='#2ca02c', label=f'$y = \\log_{{{a_gt1:.2f}}}(x)$', zorder=3)
+    ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
     
     ax2.grid(True, linestyle=':', alpha=0.7, zorder=0)
     ax2.set_xlim(-5.5, 7.5)
     ax2.set_ylim(-9, 10)
-    ax2.legend(fontsize=12, loc='upper left')
-    ax2.tick_params(labelsize=12)
+    ax2.legend(fontsize=10, loc='upper left')
+    ax2.tick_params(labelsize=10)
     st.pyplot(fig2)
+
+with col3:
+    st.subheader(f"דעיכה ($0 < a = {a_lt1:.2f} < 1$)")
+    fig3, ax3 = plt.subplots(figsize=(5, 5))
+    
+    x_exp = np.linspace(-5, 5, 1500)
+    x_log = np.linspace(0.001, 7.5, 1500)
+    
+    y3_exp = a_lt1**x_exp
+    y3_log = np.log(x_log) / np.log(a_lt1)
+
+    ax3.axhline(0, color='black', lw=1.2, zorder=1)
+    ax3.axvline(0, color='black', lw=1.2, zorder=1)
+    ax3.plot(x_exp, y3_exp, lw=2.2, color='#d62728', label=f'$y = {a_lt1:.2f}^{{x}}$', zorder=3)
+    ax3.plot(x_log, y3_log, lw=2.2, color='#2ca02c', label=f'$y = \\log_{{{a_lt1:.2f}}}(x)$', zorder=3)
+    ax3.plot(x_log, x_log, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+    
+    ax3.grid(True, linestyle=':', alpha=0.7, zorder=0)
+    ax3.set_xlim(-5.5, 7.5)
+    ax3.set_ylim(-9, 10)
+    ax3.legend(fontsize=10, loc='upper left')
+    ax3.tick_params(labelsize=10)
+    st.pyplot(fig3)
