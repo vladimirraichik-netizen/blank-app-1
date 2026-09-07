@@ -17,13 +17,13 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
-    # Очищенный список без пояснений в скобках
+    # Очищенные математические обозначения без лишних скобок
     rational_options = {
         "√x": (1, 2),
         "x · √x": (3, 2),
         "∛x": (1, 3),
-        "∛(x²)": (2, 3),
-        "∜(x³)": (3, 4),
+        "∛x²": (2, 3),
+        "∜x³": (3, 4),
         "1 / √x": (-1, 2),
         "1 / ∛x": (-1, 3)
     }
@@ -37,7 +37,8 @@ col1, col2, col3 = st.columns(3, gap="medium")
 
 with col1:
     fig1, ax1 = plt.subplots(figsize=(5, 5))
-    x1 = np.linspace(-5, 5, 1500)
+    # Увеличиваем плотность сетки до 3000 точек для гладких и точных асимптот
+    x1 = np.linspace(-5.5, 5.5, 3000)
     
     if func_type == "Integer Power (x^n)":
         if n == 0:
@@ -53,7 +54,7 @@ with col1:
         with np.errstate(divide='ignore', invalid='ignore'):
             y1 = x1**n
             if n < 0:
-                y1[np.abs(x1) < 0.02] = np.nan
+                y1[np.abs(x1) < 0.005] = np.nan
             y1[y1 > 45] = np.nan
             y1[y1 < -45] = np.nan
             
@@ -103,7 +104,7 @@ with col1:
                     y1 = np.sign(x1) * ((np.abs(x1) ** (p / q)))
                 
             if p < 0:
-                y1[np.abs(x1) < 0.02] = np.nan
+                y1[np.abs(x1) < 0.005] = np.nan
             y1[y1 > 45] = np.nan
             y1[y1 < -45] = np.nan
             
@@ -122,8 +123,9 @@ with col2:
     st.subheader(f"גידול ($a = {a_gt1:.2f} > 1$)")
     fig2, ax2 = plt.subplots(figsize=(5, 5))
     
-    x_exp = np.linspace(-5, 5, 1500)
-    x_log = np.linspace(0.001, 7.5, 1500)
+    # Расширяем диапазон для показательной и логарифмической функций, чтобы асимптоты уходили дальше
+    x_exp = np.linspace(-5.5, 5.5, 3000)
+    x_log = np.linspace(0.0001, 7.5, 3000)
     
     y2_exp = a_gt1**x_exp
     y2_log = np.log(x_log) / np.log(a_gt1)
@@ -145,8 +147,8 @@ with col3:
     st.subheader(f"דעיכה ($0 < a = {a_lt1:.2f} < 1$)")
     fig3, ax3 = plt.subplots(figsize=(5, 5))
     
-    x_exp = np.linspace(-5, 5, 1500)
-    x_log = np.linspace(0.001, 7.5, 1500)
+    x_exp = np.linspace(-5.5, 5.5, 3000)
+    x_log = np.linspace(0.0001, 7.5, 3000)
     
     y3_exp = a_lt1**x_exp
     y3_log = np.log(x_log) / np.log(a_lt1)
