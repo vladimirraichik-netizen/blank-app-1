@@ -4,10 +4,15 @@ import numpy as np
 
 st.set_page_config(layout="wide", page_title="חקר פונקציות", page_icon="📈")
 
-# Фикс направления текста и элементов для стабильности слайдеров
+# Жесткий принудительный LTR для слайдеров, чтобы иврит не переворачивал шкалу
 st.markdown("""
 <style>
-    .stSlider { direction: ltr !important; }
+    div[data-baseweb="slider"] {
+        direction: ltr !important;
+    }
+    .stSlider {
+        direction: ltr !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
