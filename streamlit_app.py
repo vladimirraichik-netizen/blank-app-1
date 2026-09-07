@@ -17,15 +17,15 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
-    # Только чистый математический вид без лишних символов
+    # Чистая классическая математическая нотация без сырых степеней
     rational_options = {
-        "x^(1/2)  —  √x": (1, 2),
-        "x^(3/2)  —  x·√x": (3, 2),
-        "x^(1/3)  —  ∛x": (1, 3),
-        "x^(2/3)  —  ∛(x²)": (2, 3),
-        "x^(3/4)  —  ∜(x³)": (3, 4),
-        "x^(-1/2) —  1/√x": (-1, 2),
-        "x^(-1/3) —  1/∛x": (-1, 3)
+        "√x  (квадратный корень)": (1, 2),
+        "x · √x  (степень 3/2)": (3, 2),
+        "∛x  (кубический корень)": (1, 3),
+        "∛(x²)  (степень 2/3)": (2, 3),
+        "∜(x³)  (степень 3/4)": (3, 4),
+        "1 / √x  (отрицательная)": (-1, 2),
+        "1 / ∛x  (отрицательная)": (-1, 3)
     }
     selected_rat = st.sidebar.selectbox("Select rational power", list(rational_options.keys()))
     p, q = rational_options[selected_rat]
