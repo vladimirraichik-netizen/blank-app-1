@@ -7,13 +7,19 @@ st.set_page_config(layout="wide", page_title="חקר פונקציות", page_ico
 st.title("📊 חקר פונקציות: חזקה, מעריכית ולוגריתמית")
 
 st.sidebar.header("Parameters")
-# Выбор режима для степенной функции
-func_type = st.sidebar.selectbox("Power Function Type", ["Integer Power (x^n)", "Root Function (n-th root)"])
+# Расширяем выбор режимов для первой колонки
+func_type = st.sidebar.selectbox(
+    "Power Function Type", 
+    ["Integer Power (x^n)", "Root Function (n-th root)", "Rational Power (x^(p/q))"]
+)
 
 if func_type == "Integer Power (x^n)":
     n = st.sidebar.number_input("Power (n)", min_value=-5, max_value=5, value=2, step=1)
-else:
+elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
+else:
+    p = st.sidebar.number_input("Numerator (p)", min_value=-5, max_value=5, value=1, step=1)
+    q = st.sidebar.number_input("Denominator (q)", min_value=1, max_value=6, value=2, step=1)
 
 a_gt1 = st.sidebar.number_input("Base a > 1 (Growth)", min_value=1.05, max_value=5.0, value=2.0, step=0.05)
 a_lt1 = st.sidebar.number_input("Base 0 < a < 1 (Decay)", min_value=0.1, max_value=0.95, value=0.5, step=0.05)
@@ -45,8 +51,8 @@ with col1:
             
         ax1.set_xlim(-5.5, 5.5)
         ax1.set_ylim(-9, 9)
-    else:
-        # Корень n-й степени (поддерживает нечетные корни для отрицательных x через sign)
+        
+    elif func_type == "Root Function (n-th root)":
         if root_n == 2:
             power_str = "y = \\sqrt{x}"
         else:
@@ -58,6 +64,28 @@ with col1:
             else:
                 y1 = np.where(x1 >= 0, x1 ** (1 / root_n), np.nan)
                 
+        ax1.set_xlim(-5.5, 5.5)
+        ax1.set_ylim(-9, 9)
+        
+    else:
+        # Рациональная степень x^(p/q)
+        power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
+        
+        with np.errstate(divide='ignore', invalid='ignore'):
+            # Корректная обработка для дробных степеней (учитываем четность/нечетность знаменателя q)
+            if q % 2 == 1:
+                # При нечетном знаменателе корень извлекается и из отрицательных чисел
+                y1 = np.sign(x1) * (np.abs(x1) ** (p / q))
+            else:
+                # При четном знаменателе область определения x >= 0
+                y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
+                
+            # Обработка отрицательных степеней (деление на ноль в точке 0)
+            if p < 0:
+                y1[np.abs(x1) < 0.02] = np.nan
+            y1[y1 > 45] = np.nan
+            y1[y1 < -45] = np.nan
+            
         ax1.set_xlim(-5.5, 5.5)
         ax1.set_ylim(-9, 9)
 
