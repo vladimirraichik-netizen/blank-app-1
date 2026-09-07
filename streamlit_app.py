@@ -17,7 +17,6 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
-    # Чистая классическая математическая нотация без сырых степеней
     rational_options = {
         "√x  (квадратный корень)": (1, 2),
         "x · √x  (степень 3/2)": (3, 2),
@@ -94,10 +93,14 @@ with col1:
             power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
         
         with np.errstate(divide='ignore', invalid='ignore'):
-            if q % 2 == 1:
-                y1 = np.sign(x1) * (np.abs(x1) ** (p / q))
+            # Исправленный математический расчет с учетом четности корней и степеней
+            if q % 2 == 0:
+                y1 = (np.abs(x1) ** p) ** (1 / q)
             else:
-                y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
+                if p % 2 == 0:
+                    y1 = (np.abs(x1) ** p) ** (1 / q)
+                else:
+                    y1 = np.sign(x1) * ((np.abs(x1) ** p) ** (1 / q))
                 
             if p < 0:
                 y1[np.abs(x1) < 0.02] = np.nan
