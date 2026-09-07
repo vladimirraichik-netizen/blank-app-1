@@ -67,7 +67,6 @@ with col1:
             ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
             ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', zorder=3)
         else:
-            # Если четная степень и включена обратная функция, ограничиваем область x >= 0 для взаимной обратимости
             is_even = (n > 0 and n % 2 == 0)
             x_min = 0.001 if (n < 0 or (is_even and show_inverse)) else -5.5
             x1 = np.linspace(x_min, 5.5, 3000)
@@ -82,7 +81,8 @@ with col1:
                 y_inv[y_inv > 100] = np.nan
                 inv_label = f"$y = \\sqrt[{n}]{{x}}$" if n > 2 else ("$y = \\sqrt{x}$" if n == 2 else "$y = x$")
                 ax1.plot(x_pos, y_inv, lw=2.2, color='#ff7f0e', label=inv_label, zorder=3)
-                ax1.plot(np.linspace(-5.5, 5.5, 200), np.linspace(-5.5, 5.5, 200), color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
+                # Линия симметрии ограничена областью существования графиков (x >= 0)
+                ax1.plot(x_pos, x_pos, color='gray', linestyle='--', lw=1.3, label='$y = x$', zorder=2)
                 ax1.legend(fontsize=9, loc='upper left')
                 
         ax1.set_xlim(-5.5, 5.5)
