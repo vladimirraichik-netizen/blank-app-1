@@ -36,7 +36,6 @@ col1, col2, col3 = st.columns(3, gap="medium")
 
 with col1:
     fig1, ax1 = plt.subplots(figsize=(5, 5))
-    x1 = np.linspace(-5.5, 5.5, 4000)
     
     if func_type == "Integer Power (x^n)":
         if n == 0:
@@ -49,14 +48,25 @@ with col1:
             abs_n = abs(n)
             power_str = f"y = \\frac{{1}}{{x^{{{abs_n}}}}}" if abs_n > 1 else "y = \\frac{1}{x}"
             
-        with np.errstate(divide='ignore', invalid='ignore'):
+        if n < 0:
+            # Строим раздельно левую и правую ветки для функций с разрывом в нуле
+            x_left = np.linspace(-5.5, -0.001, 2000)
+            x_right = np.linspace(0.001, 5.5, 2000)
+            y_left = x_left**n
+            y_right = x_right**n
+            y_left[y_left > 100] = np.nan
+            y_left[y_left < -100] = np.nan
+            y_right[y_right > 100] = np.nan
+            y_right[y_right < -100] = np.nan
+            
+            ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
+            ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', zorder=3)
+        else:
+            x1 = np.linspace(-5.5, 5.5, 3000)
             y1 = x1**n
-            if n < 0:
-                # Разрываем линию прямо в нуле для корректной асимптоты
-                y1[x1 == 0] = np.nan
-            # Не обрезаем по вертикали агрессивно, даем matplotlib рисовать линии до границ
             y1[y1 > 100] = np.nan
             y1[y1 < -100] = np.nan
+            ax1.plot(x1, y1, lw=2.2, color='#1f77b4', zorder=3)
             
         ax1.set_xlim(-5.5, 5.5)
         ax1.set_ylim(-9, 9)
@@ -67,12 +77,14 @@ with col1:
         else:
             power_str = f"y = \\sqrt[{root_n}]{{x}}"
             
+        x1 = np.linspace(-5.5, 5.5, 3000)
         with np.errstate(divide='ignore', invalid='ignore'):
             if root_n % 2 == 1:
                 y1 = np.sign(x1) * (np.abs(x1) ** (1 / root_n))
             else:
                 y1 = np.where(x1 >= 0, x1 ** (1 / root_n), np.nan)
                 
+        ax1.plot(x1, y1, lw=2.2, color='#1f77b4', zorder=3)
         ax1.set_xlim(-5.5, 5.5)
         ax1.set_ylim(-9, 9)
         
@@ -95,26 +107,42 @@ with col1:
             power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
         
         with np.errstate(divide='ignore', invalid='ignore'):
-            if q % 2 == 0:
-                y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
-            else:
-                if p % 2 == 0:
-                    y1 = (np.abs(x1) ** (p / q))
-                else:
-                    y1 = np.sign(x1) * ((np.abs(x1) ** (p / q)))
+            if p < 0 and q % 2 == 1:
+                # Отрицательная дробная степень с нечетным знаменателем (разрыв в 0)
+                x_left = np.linspace(-5.5, -0.001, 2000)
+                x_right = np.linspace(0.001, 5.5, 2000)
+                y_left = -1 * (np.abs(x_left) ** (abs(p) / q)) # исправлено для корректного знака
+                # точный расчет для ветвей с делением на ноль
+                y_left = np.sign(x_left) * (np.abs(x_left) ** (p / q))
+                y_right = np.sign(x_right) * (np.abs(x_right) ** (p / q))
                 
-            if p < 0:
-                y1[x1 == 0] = np.nan
-            y1[y1 > 100] = np.nan
-            y1[y1 < -100] = np.nan
-            
+                y_left[y_left > 100] = np.nan
+                y_left[y_left < -100] = np.nan
+                y_right[y_right > 100] = np.nan
+                y_right[y_right < -100] = np.nan
+                
+                ax1.plot(x_left, y_left, lw=2.2, color='#1f77b4', zorder=3)
+                ax1.plot(x_right, y_right, lw=2.2, color='#1f77b4', zorder=3)
+            else:
+                x1 = np.linspace(-5.5, 5.5, 3000)
+                if q % 2 == 0:
+                    y1 = np.where(x1 >= 0, x1 ** (p / q), np.nan)
+                else:
+                    if p % 2 == 0:
+                        y1 = (np.abs(x1) ** (p / q))
+                    else:
+                        y1 = np.sign(x1) * ((np.abs(x1) ** (p / q)))
+                
+                y1[y1 > 100] = np.nan
+                y1[y1 < -100] = np.nan
+                ax1.plot(x1, y1, lw=2.2, color='#1f77b4', zorder=3)
+                
         ax1.set_xlim(-5.5, 5.5)
         ax1.set_ylim(-9, 9)
 
     st.subheader(f"${power_str}$")
     ax1.axhline(0, color='black', lw=1.2, zorder=1)
     ax1.axvline(0, color='black', lw=1.2, zorder=1)
-    ax1.plot(x1, y1, lw=2.2, color='#1f77b4', zorder=3)
     ax1.grid(True, linestyle=':', alpha=0.7, zorder=0)
     ax1.tick_params(labelsize=10)
     st.pyplot(fig1)
