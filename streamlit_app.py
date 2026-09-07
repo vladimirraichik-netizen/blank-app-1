@@ -17,7 +17,6 @@ if func_type == "Integer Power (x^n)":
 elif func_type == "Root Function (n-th root)":
     root_n = st.sidebar.number_input("Root index (n)", min_value=2, max_value=6, value=2, step=1)
 else:
-    # Словарь готовых красивых несократимых дробей (отображение -> числовое значение p/q)
     rational_options = {
         "x^(1/2)  (Sqrt)": (1, 2),
         "x^(3/2)  (x * Sqrt(x))": (3, 2),
@@ -76,12 +75,10 @@ with col1:
         ax1.set_ylim(-9, 9)
         
     else:
-        # Красивое LaTeX отображение несократимой дроби
         if p < 0:
-            abs_p = abs(p)
-            power_str = f"y = \\frac{{1}}{{x^{{{\\frac{{{abs_p}}}{{{q}}}}}}}}"
+            power_str = f"y = \\frac{{1}}{{x^{{{abs(p)}/{q}}}"
         else:
-            power_str = f"y = x^{{\\frac{{{p}}}{{{q}}}}}"
+            power_str = f"y = x^{{{p}/{q}}}"
         
         with np.errstate(divide='ignore', invalid='ignore'):
             if q % 2 == 1:
