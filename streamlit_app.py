@@ -35,11 +35,12 @@ with col1:
         y1[y1 > 45] = np.nan
         y1[y1 < -45] = np.nan
 
-    # Оптимальная толщина для видимости асимптот без слипания
-    ax1.plot(x1, y1, lw=2.5, color='#1f77b4')
-    ax1.axhline(0, color='black', lw=1.2)
-    ax1.axvline(0, color='black', lw=1.2)
-    ax1.grid(True, linestyle=':', alpha=0.7)
+    # Оси рисуем ниже (zorder=1), а график выше (zorder=3), задавая четкий визуальный слой
+    ax1.axhline(0, color='black', lw=1.2, zorder=1)
+    ax1.axvline(0, color='black', lw=1.2, zorder=1)
+    ax1.plot(x1, y1, lw=2.2, color='#1f77b4', zorder=3)
+    
+    ax1.grid(True, linestyle=':', alpha=0.7, zorder=0)
     ax1.set_xlim(-5.5, 5.5)
     ax1.set_ylim(-9, 9)
     ax1.tick_params(labelsize=12)
@@ -49,20 +50,20 @@ with col2:
     st.subheader(f"מעריכית ולוגריתמית ($a = {a:.2f}$)")
     fig2, ax2 = plt.subplots(figsize=(8, 6))
     
-    # Полный диапазон без обрезки асимптот
     x_exp = np.linspace(-5, 5, 1500)
     x_log = np.linspace(0.001, 7.5, 1500)
     
     y2_exp = a**x_exp
     y2_log = np.log(x_log) / np.log(a)
 
-    ax2.plot(x_exp, y2_exp, lw=2.5, color='#d62728', label=f'$y = {a:.2f}^{{x}}$')
-    ax2.plot(x_log, y2_log, lw=2.5, color='#2ca02c', label=f'$y = \\log_{{{a:.2f}}}(x)$')
-    ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.5, label='$y = x$')
+    ax2.axhline(0, color='black', lw=1.2, zorder=1)
+    ax2.axvline(0, color='black', lw=1.2, zorder=1)
     
-    ax2.axhline(0, color='black', lw=1.2)
-    ax2.axvline(0, color='black', lw=1.2)
-    ax2.grid(True, linestyle=':', alpha=0.7)
+    ax2.plot(x_exp, y2_exp, lw=2.2, color='#d62728', label=f'$y = {a:.2f}^{{x}}$', zorder=3)
+    ax2.plot(x_log, y2_log, lw=2.2, color='#2ca02c', label=f'$y = \\log_{{{a:.2f}}}(x)$', zorder=3)
+    ax2.plot(x_log, x_log, color='gray', linestyle='--', lw=1.5, label='$y = x$', zorder=2)
+    
+    ax2.grid(True, linestyle=':', alpha=0.7, zorder=0)
     ax2.set_xlim(-5.5, 7.5)
     ax2.set_ylim(-9, 10)
     ax2.legend(fontsize=12, loc='upper left')
